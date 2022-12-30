@@ -27,13 +27,13 @@ $SPARK_HOME/sbin/start-worker.sh spark://ripper:7077
 
 ```bash
 $SPARK_HOME/bin/spark-submit --master spark://ripper:7077 \
-    --class io.sqlbenchmarks.sqlbenchds.Main \
+    --class io.sqlbenchmarks.sqlbenchh.Main \
     --conf spark.driver.memory=8G \
     --conf spark.executor.memory=32G \
     --conf spark.executor.cores=24 \
-    target/sqlbench-ds-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
-    --input-path /mnt/bigdata/tpcds/sf100-parquet/ \
-    --query-path ~/git/sql-benchmarks/sqlbench-ds-private/queries-spark/sf\=100/ \
+    target/sqlbench-h-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
+    --input-path /mnt/bigdata/tpch/sf10-parquet/ \
+    --query-path ~/git/sql-benchmarks/sqlbench-h-private/queries/sf\=10/ \
     --query 1
 ```
 
@@ -45,10 +45,9 @@ $SPARK_HOME/bin/spark-submit --master spark://ripper:7077 \
     --conf spark.driver.memory=8G \
     --conf spark.executor.memory=32G \
     --conf spark.executor.cores=24 \
-    target/sqlbench-ds-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
-    --input-path /mnt/bigdata/tpcds/sf100-parquet/ \
-    --query-path ~/git/sql-benchmarks/sqlbench-ds-private/queries-spark/sf\=100/ \
-    --skip-query72
+    target/sqlbench-h-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
+    --input-path /mnt/bigdata/tpch/sf10-parquet/ \
+    --query-path ~/git/sql-benchmarks/sqlbench-h-private/queries/sf\=10/
 ```
 
 Monitor progress via the Spark UI at http://localhost:8080
