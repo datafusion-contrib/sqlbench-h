@@ -1,4 +1,4 @@
-# SQLBench-DS: DataFusion Runner
+# SQLBench-H: DataFusion Runner
 
 ## Run Single Query
 

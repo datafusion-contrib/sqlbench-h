@@ -1,4 +1,4 @@
-# Spark SQLBench-DS Benchmarks
+# Spark SQLBench-H Benchmarks
 
 ## Pre-requisites
 

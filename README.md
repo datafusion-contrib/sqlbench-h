@@ -5,10 +5,7 @@
 SQLBench-H is a SQL benchmark derived from [TPC-H](https://www.tpc.org/tpch/) under the terms of the Transaction
 Processing Council's [Fair Use Policy](https://www.tpc.org/tpc_documents_current_versions/pdf/tpc_fair_use_quick_reference_v1.0.0.pdf).
 
-This benchmark is limited to measuring the execution time of individual queries derived from TPC-H and is intended for
-use as a way to compare performance between open source query engines.
-
-## How does this differ from TPC-H
+## How does SQLBench-H differ from TPC-H?
 
 - This benchmark only measures execution times for individual queries
 - Only Parquet input files are supported
@@ -16,7 +13,7 @@ use as a way to compare performance between open source query engines.
 
 ## Legal Stuff
 
-SQLBench-H is a Non-TPC Benchmark. Any comparison between official TPC Results with non-TPC workloaH is prohibited by
+SQLBench-H is a Non-TPC Benchmark. Any comparison between official TPC Results with non-TPC workloads is prohibited by
 the TPC.
 
 TPC-H is Copyright &copy; 1993-2022 Transaction Processing Performance Council. The full TPC-H specification in PDF

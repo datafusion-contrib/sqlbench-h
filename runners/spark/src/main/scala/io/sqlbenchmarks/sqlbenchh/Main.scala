@@ -1,4 +1,4 @@
-package io.sqlbenchmarks.sqlbenchds
+package io.sqlbenchmarks.sqlbenchh
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.internal.SQLConf
@@ -19,10 +19,7 @@ class Conf(args: Array[String]) extends ScallopConf(args) {
 object Main {
 
   val tables = Seq(
-    "call_center", "customer_address", "household_demographics", "promotion", "store_returns", "web_page",
-    "catalog_page", "customer_demographics", "income_band", "reason", "store_sales", "web_returns",
-    "catalog_returns", "customer", "inventory", "ship_mode", "time_dim", "web_sales", "catalog_sales",
-    "date_dim", "item", "store", "warehouse", "web_site"
+    "customer", "lineitem", "nation", "orders", "part", "partsupp", "region", "supplier"
   )
 
   def main(args: Array[String]): Unit = {
@@ -31,8 +28,7 @@ object Main {
     val w = new BufferedWriter(new FileWriter(new File("results.csv")))
 
     val spark: SparkSession = SparkSession.builder
-      .appName("Spark TPC-DS Benchmarks")
-      .config(SQLConf.AUTO_BROADCASTJOIN_THRESHOLD.key, "-1")
+      .appName("SQLBench-H Benchmarks")
       .getOrCreate()
 
     // register tables
@@ -52,11 +48,7 @@ object Main {
     if (conf.query.isSupplied) {
       execute(spark, conf.queryPath(), conf.query().toInt, w)
     } else {
-      for (query <- 1 to 99) {
-        if (query == 72 && conf.skipQuery72()) {
-          // skip q72 on most runs because it takes forever without join reordering enabled
-          println("Skipping query 72")
-        } else {
+      for (query <- 1 to 22) {
           try {
             execute(spark, conf.queryPath(), query, w)
           } catch {
@@ -65,7 +57,6 @@ object Main {
               println(s"Query $query FAILED:")
               e.printStackTrace()
           }
-        }
       }
     }
 
@@ -100,7 +91,7 @@ object Main {
 
       var prefix = s"q$query"
       if (queries.length > 1) {
-        prefix += "_part_" + (i+1)
+        prefix += "_part_"+ (i+1)
       }
       w.write(s"$prefix,$duration\n")
       w.flush()
@@ -125,7 +116,7 @@ object Main {
   }
 
   def writeFile(prefix: String, suffix: String, text: String): Unit = {
-    val filename = prefix + "_" + suffix
+    val filename = prefix + "_"+ suffix
     println(s"Writing $filename")
     val file = new File(filename)
     val bw = new BufferedWriter(new FileWriter(file))

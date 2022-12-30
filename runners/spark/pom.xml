@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.andygrove</groupId>
-    <artifactId>sqlbench-ds</artifactId>
+    <artifactId>sqlbench-h</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>SQLBench-DS Benchmarks for Apache Spark</name>
+    <name>SQLBench-H Benchmarks for Apache Spark</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

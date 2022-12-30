@@ -1,4 +1,4 @@
-package io.sqlbenchmarks.sqlbenchds
+package io.sqlbenchmarks.sqlbenchh
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper

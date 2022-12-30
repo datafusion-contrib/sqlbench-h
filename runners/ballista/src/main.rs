@@ -15,30 +15,7 @@ use structopt::StructOpt;
 use tokio::time::Instant;
 
 const TABLES: &[&str] = &[
-    "call_center",
-    "customer_address",
-    "household_demographics",
-    "promotion",
-    "store_returns",
-    "web_page",
-    "catalog_page",
-    "customer_demographics",
-    "income_band",
-    "reason",
-    "store_sales",
-    "web_returns",
-    "catalog_returns",
-    "customer",
-    "inventory",
-    "ship_mode",
-    "time_dim",
-    "web_sales",
-    "catalog_sales",
-    "date_dim",
-    "item",
-    "store",
-    "warehouse",
-    "web_site",
+    "customer", "lineitem", "nation", "orders", "part", "partsupp", "region", "supplier"
 ];
 
 /// A basic example
@@ -111,7 +88,7 @@ pub async fn main() -> Result<()> {
             execute_query(&ctx, &query_path, query, opt.debug, &output_path).await?;
         }
         _ => {
-            for query in 1..=99 {
+            for query in 1..=22 {
                 let result = execute_query(&ctx, &query_path, query, opt.debug, &output_path).await;
                 match result {
                     Ok(_) => {}
