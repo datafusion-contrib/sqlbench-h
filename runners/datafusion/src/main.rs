@@ -11,7 +11,7 @@ use structopt::StructOpt;
 use tokio::time::Instant;
 
 const TABLES: &[&str] = &[
-    "customer", "lineitem", "nation", "orders", "part", "partsupp", "region", "supplier"
+    "customer", "lineitem", "nation", "orders", "part", "partsupp", "region", "supplier",
 ];
 
 /// A basic example

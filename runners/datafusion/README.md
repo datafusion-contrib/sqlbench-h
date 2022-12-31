@@ -1,22 +1,28 @@
 # SQLBench-H: DataFusion Runner
 
+## Build
+
+```bash
+cargo build --release
+```
+
 ## Run Single Query
 
 ```bash
-./target/release/datafusion-sqlbench-ds \
+./target/release/datafusion-sqlbench-h \
   --concurrency 24 \
-  --data-path /mnt/bigdata/tpcds/sf100-parquet/ \
-  --query-path=/home/andy/git/sql-benchmarks/sqlbench-ds-private/queries/sf\=100/ \
-  --output /home/andy/git/sql-benchmarks/sqlbench-ds-private/results/datafusion/sf\=100/output \
+  --data-path /mnt/bigdata/tpch/sf10-parquet/ \
+  --query-path=../../queries/sf\=10/ \
+  --output . \
   --query 1
 ```
 
 ## Run All Queries
 
 ```bash
-./target/release/datafusion-sqlbench-ds \
+./target/release/datafusion-sqlbench-h \
   --concurrency 24 \
-  --data-path /mnt/bigdata/tpcds/sf100-parquet/ \
-  --query-path=/home/andy/git/sql-benchmarks/sqlbench-ds-private/queries/sf\=100/ \
-  --output /home/andy/git/sql-benchmarks/sqlbench-ds-private/results/datafusion/sf\=100/output
+  --data-path /mnt/bigdata/tpch/sf10-parquet/ \
+  --query-path=../../queries/sf\=10/ \
+  --output .
 ```

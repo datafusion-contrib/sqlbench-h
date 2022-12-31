@@ -87,8 +87,6 @@ object Main {
       val duration = System.currentTimeMillis() - start
       println(s"Query $query took $duration ms")
 
-
-
       var prefix = s"q$query"
       if (queries.length > 1) {
         prefix += "_part_"+ (i+1)
