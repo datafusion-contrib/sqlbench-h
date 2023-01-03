@@ -1,6 +1,7 @@
 use datafusion::common::{DataFusionError, Result};
 use datafusion::datasource::MemTable;
 use datafusion::prelude::{ParquetReadOptions, SessionConfig, SessionContext};
+#[cfg(feature = "qpml")]
 use qpml::from_datafusion;
 use std::fs;
 use std::fs::File;
@@ -130,7 +131,7 @@ pub async fn execute_query(
 
         let start = Instant::now();
         let df = ctx.sql(sql).await?;
-        let batches = df.collect().await?;
+        let batches = df.clone().collect().await?;
         let duration = start.elapsed();
         println!(
             "Query {}{} executed in: {:?}",
@@ -140,7 +141,7 @@ pub async fn execute_query(
         w.write(format!("q{}{},{}\n", query_no, file_suffix, duration.as_millis()).as_bytes())?;
         w.flush()?;
 
-        let plan = df.to_logical_plan()?;
+        let plan = df.into_optimized_plan()?;
         let formatted_query_plan = format!("{}", plan.display_indent());
         let filename = format!(
             "{}/q{}{}-logical-plan.txt",
@@ -149,12 +150,15 @@ pub async fn execute_query(
         let mut file = File::create(&filename)?;
         write!(file, "{}", formatted_query_plan)?;
 
-        // write QPML
-        let qpml = from_datafusion(&plan);
-        let filename = format!("{}/q{}{}.qpml", output_path, query_no, file_suffix);
-        let file = File::create(&filename)?;
-        let mut file = BufWriter::new(file);
-        serde_yaml::to_writer(&mut file, &qpml).unwrap();
+        #[cfg(feature = "qpml")]
+        {
+            // write QPML
+            let qpml = from_datafusion(&plan);
+            let filename = format!("{}/q{}{}.qpml", output_path, query_no, file_suffix);
+            let file = File::create(&filename)?;
+            let mut file = BufWriter::new(file);
+            serde_yaml::to_writer(&mut file, &qpml).unwrap();
+        }
 
         // write results to disk
         if batches.is_empty() {
@@ -169,3 +173,4 @@ pub async fn execute_query(
 
     Ok(())
 }
+
