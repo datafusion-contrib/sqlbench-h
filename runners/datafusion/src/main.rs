@@ -61,7 +61,7 @@ pub struct Results {
     datafusion_github_sha: Option<String>,
     config: HashMap<String, String>,
     command_line_args: Vec<String>,
-    register_tables_time: usize,
+    register_tables_time: u128,
     /// Vector of (query_number, query_times)
     query_times: Vec<(u8, Vec<u128>)>,
 }
@@ -105,9 +105,6 @@ pub async fn main() -> Result<()> {
 
     let ctx = SessionContext::with_config(config);
 
-    let f = File::create(&format!("{}/timings.csv", output_path))?;
-    let mut w = BufWriter::new(f);
-
     // register tables
     let start = Instant::now();
     for table in TABLES {
@@ -124,14 +121,11 @@ pub async fn main() -> Result<()> {
             )));
         }
     }
-    let duration = start.elapsed();
-    w.write(format!("Register Tables,{}\n", duration.as_millis()).as_bytes())?;
-    w.flush()?;
+    results.register_tables_time = start.elapsed().as_millis();
 
     match opt.query {
         Some(query) => {
             execute_query(
-                &mut w,
                 &ctx,
                 &query_path,
                 query,
@@ -145,7 +139,6 @@ pub async fn main() -> Result<()> {
         _ => {
             for query in 1..=22 {
                 let result = execute_query(
-                    &mut w,
                     &ctx,
                     &query_path,
                     query,
@@ -173,7 +166,6 @@ pub async fn main() -> Result<()> {
 }
 
 pub async fn execute_query(
-    w: &mut BufWriter<File>,
     ctx: &SessionContext,
     query_path: &str,
     query_no: u8,
@@ -195,7 +187,7 @@ pub async fn execute_query(
     let multipart = sql.len() > 1;
 
     let mut durations = vec![];
-    for _ in 0..iterations {
+    for iteration in 0..iterations {
         // duration for executing all queries in the file
         let mut total_duration_millis = 0;
 
@@ -220,33 +212,32 @@ pub async fn execute_query(
                 query_no, file_suffix, duration
             );
 
-            w.write(format!("q{}{},{}\n", query_no, file_suffix, duration.as_millis()).as_bytes())?;
-            w.flush()?;
+            if iteration == 0 {
+                let plan = df.to_logical_plan()?;
+                let formatted_query_plan = format!("{}", plan.display_indent());
+                let filename = format!(
+                    "{}/q{}{}-logical-plan.txt",
+                    output_path, query_no, file_suffix
+                );
+                let mut file = File::create(&filename)?;
+                write!(file, "{}", formatted_query_plan)?;
 
-            let plan = df.to_logical_plan()?;
-            let formatted_query_plan = format!("{}", plan.display_indent());
-            let filename = format!(
-                "{}/q{}{}-logical-plan.txt",
-                output_path, query_no, file_suffix
-            );
-            let mut file = File::create(&filename)?;
-            write!(file, "{}", formatted_query_plan)?;
+                // write QPML
+                let qpml = from_datafusion(&plan);
+                let filename = format!("{}/q{}{}.qpml", output_path, query_no, file_suffix);
+                let file = File::create(&filename)?;
+                let mut file = BufWriter::new(file);
+                serde_yaml::to_writer(&mut file, &qpml).unwrap();
 
-            // write QPML
-            let qpml = from_datafusion(&plan);
-            let filename = format!("{}/q{}{}.qpml", output_path, query_no, file_suffix);
-            let file = File::create(&filename)?;
-            let mut file = BufWriter::new(file);
-            serde_yaml::to_writer(&mut file, &qpml).unwrap();
-
-            // write results to disk
-            if batches.is_empty() {
-                println!("Empty result set returned");
-            } else {
-                let filename = format!("{}/q{}{}.csv", output_path, query_no, file_suffix);
-                let t = MemTable::try_new(batches[0].schema(), vec![batches])?;
-                let df = ctx.read_table(Arc::new(t))?;
-                df.write_csv(&filename).await?;
+                // write results to disk
+                if batches.is_empty() {
+                    println!("Empty result set returned");
+                } else {
+                    let filename = format!("{}/q{}{}.csv", output_path, query_no, file_suffix);
+                    let t = MemTable::try_new(batches[0].schema(), vec![batches])?;
+                    let df = ctx.read_table(Arc::new(t))?;
+                    df.write_csv(&filename).await?;
+                }
             }
         }
         durations.push(total_duration_millis);
