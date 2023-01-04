@@ -165,7 +165,7 @@ pub async fn main() -> Result<()> {
 
     // write results json file
     let json = serde_json::to_string(&results).unwrap();
-    let f = File::create(&format!("{}/results.yaml", output_path))?;
+    let f = File::create(&format!("{}/results-{}.yaml", output_path, results.system_time))?;
     let mut w = BufWriter::new(f);
     w.write(json.as_bytes())?;
 
