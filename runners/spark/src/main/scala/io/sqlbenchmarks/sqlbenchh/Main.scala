@@ -12,7 +12,6 @@ class Conf(args: Array[String]) extends ScallopConf(args) {
   val queryPath = opt[String](required = true)
   val query = opt[String](required = false)
   val keepAlive = opt[Boolean](required = false)
-  val skipQuery72 = opt[Boolean](required = false)
   verify()
 }
 
@@ -34,12 +33,10 @@ object Main {
     // register tables
     val start = System.currentTimeMillis()
     for (table <- tables) {
-      //     val path = s"${conf.inputPath()}/${table}"
       val path = s"${conf.inputPath()}/${table}.parquet"
       println(s"Registering table $table at $path")
       val df = spark.read.parquet(path)
       df.createTempView(table)
-      val duration = System.currentTimeMillis() - start
     }
     val duration = System.currentTimeMillis() - start
     w.write(s"Register Tables,$duration\n")

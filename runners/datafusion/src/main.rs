@@ -108,9 +108,7 @@ pub async fn main() -> Result<()> {
     // register tables
     let start = Instant::now();
     for table in TABLES {
-        // let path = format!("{}/{}", &data_path, table.name);
         let path = format!("{}/{}.parquet", &data_path, table);
-
         if Path::new(&path).exists() {
             ctx.register_parquet(table, &path, ParquetReadOptions::default())
                 .await?;
@@ -121,7 +119,9 @@ pub async fn main() -> Result<()> {
             )));
         }
     }
-    results.register_tables_time = start.elapsed().as_millis();
+    let setup_time = start.elapsed().as_millis();
+    println!("Setup time was {} ms", setup_time);
+    results.register_tables_time = setup_time;
 
     match opt.query {
         Some(query) => {
@@ -157,7 +157,7 @@ pub async fn main() -> Result<()> {
     }
 
     // write results json file
-    let json = serde_json::to_string(&results).unwrap();
+    let json = serde_json::to_string_pretty(&results).unwrap();
     let f = File::create(&format!("{}/results-{}.yaml", output_path, results.system_time))?;
     let mut w = BufWriter::new(f);
     w.write(json.as_bytes())?;
@@ -216,7 +216,7 @@ pub async fn execute_query(
                 let plan = df.to_logical_plan()?;
                 let formatted_query_plan = format!("{}", plan.display_indent());
                 let filename = format!(
-                    "{}/q{}{}-logical-plan.txt",
+                    "{}/q{}{}_logical_plan.txt",
                     output_path, query_no, file_suffix
                 );
                 let mut file = File::create(&filename)?;
@@ -224,7 +224,7 @@ pub async fn execute_query(
 
                 // write QPML
                 let qpml = from_datafusion(&plan);
-                let filename = format!("{}/q{}{}.qpml", output_path, query_no, file_suffix);
+                let filename = format!("{}/q{}{}_logical_plan.qpml", output_path, query_no, file_suffix);
                 let file = File::create(&filename)?;
                 let mut file = BufWriter::new(file);
                 serde_yaml::to_writer(&mut file, &qpml).unwrap();
