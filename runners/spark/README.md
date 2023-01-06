@@ -41,10 +41,11 @@ $SPARK_HOME/bin/spark-submit --master spark://ripper:7077 \
 
 ```bash
 $SPARK_HOME/bin/spark-submit --master spark://ripper:7077 \
-    --class io.sqlbenchmarks.sqlbenchds.Main \
+    --class io.sqlbenchmarks.sqlbenchh.Main \
     --conf spark.driver.memory=8G \
     --conf spark.executor.memory=32G \
     --conf spark.executor.cores=24 \
+    --conf spark.cores.max=24 \
     target/sqlbench-h-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
     --input-path /mnt/bigdata/tpch/sf10-parquet/ \
     --query-path ../../queries/sf\=10/

@@ -1507,9 +1507,9 @@ dependencies = [
 
 [[package]]
 name = "qpml"
-version = "0.5.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7da7fe67efe474c93d66f002d73fdc79a20933061cab76921db1b2c4e396f582"
+checksum = "e1a38de3fa0f3abbfa8ad286fb9a1d866cebc082661d44eab8a734d9d0ed9ee9"
 dependencies = [
  "datafusion",
  "serde",
